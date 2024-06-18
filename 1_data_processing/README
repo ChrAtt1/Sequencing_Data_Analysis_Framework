@@ -1,0 +1,83 @@
+# Sequencing Data Framework Setup Guide
+
+
+## Operating System Requirement ##
+- OS required: Linux
+
+
+
+## Installation Instructions ## 
+
+bash
+chmod +x ./install_dependencies.sh
+./install_dependencies.sh
+
+Prior to executing `sequ_data_framework_Illumina.sh` and `sequ_data_framework_ONT.sh`, 
+the following dependencies must be installed:
+
+Install_dependencies.sh will install the following:
+
+- **Conda**
+  - Installation: [Conda Install Guide](https://conda.io/projects/conda/en/latest/user-
+  		   guide/install/linux.html)
+- **SAMtools**
+  - Installation: [SAMtools GitHub Repository](https://github.com/samtools/samtools)
+- **BWA Aligner**
+  - Installation: [BWA GitHub Repository](https://github.com/lh3/bwa)
+- **WhatsHap**
+  - Installation: [WhatsHap GitHub Repository](https://github.com/whatshap/whatshap)
+- **Nanofilt**
+  - Installation: [Nanofilt on Anaconda](https://anaconda.org/bioconda/nanofilt)
+- **minimap2**
+  - Installation: [minimap2 GitHub Repository](https://github.com/lh3/minimap2)
+- **fastq-filter**
+  - Installation: [fastq-filter GitHub Repository](https://github.com/LUMC/fastq-filter)
+
+*(Links were last accessed on 25 April 2024.)*
+
+
+
+## Initial Configuration ##
+
+Before the first start, modify the permissions of the scripts to make them executable:
+
+bash
+chmod +x ./sequ_data_framework_Illumina.sh
+chmod +x ./sequ_data_framework_ONT.sh
+
+
+You need to insert the variables directly into the shell scripts (sequ_data_framework_Illumina.sh 
+and sequ_data_framework_ONT.sh), you will be assigning your specific file paths to these 
+variables. Below is an example of how you might declare these variables in the scripts with 
+placeholders for your actual paths:
+
+	# Specify the base path where the data is located
+	path_base_data="/path/to/your/base/data"
+	
+	# Specify the path to the input data
+	input_data="/path/to/your/input/data"
+	
+	# Provide the path to the reference sequence file (.fa-file)
+	path_reference_sequence="/path/to/your/reference/sequence.fa"
+
+Replace the placeholder paths (/path/to/your/...) with the actual paths on your system. You would 
+insert these variable declarations near the beginning of your sequ_data_framework_Illumina.sh 
+and sequ_data_framework_ONT.sh scripts, right after the shebang line (#!/bin/bash) and before 
+any commands that use these variables.
+
+Remember: Whenever you modify scripts, it's important to ensure that the paths you insert match 
+the actual locations of the files and directories on your file system. Incorrect paths will lead 
+to errors when running the scripts.
+
+
+
+## Running the Scripts ##
+
+To run the scripts, use the following commands in the terminal:
+bash
+
+./sequ_data_framework_Illumina.sh 
+./sequ_data_framework_ONT.sh
+
+Ensure you have the necessary permissions and that the paths specified in the scripts are correct 
+before execution.
