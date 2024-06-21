@@ -137,7 +137,7 @@ def extract_haplotype_frequencies(df_to_analyze, methods):
             return ''
 
     def add_if_not_empty(func_return):
-        return ',' + str(func_return) if func_return != '' else ''
+        return '/' + str(func_return) if func_return != '' else ''
 
     def calculate_frequency(lst1, lst2):
         # Concatenate the two lists
@@ -224,11 +224,9 @@ def extract_haplotype_frequencies(df_to_analyze, methods):
                     cur_homozygot_method1.append(''.join(sorted(curRow + curColumn[1].iloc[idxRow + 1])))
                 # Heterozygous case
                 elif curRow == curColumn[1].iloc[idxRow + 1] and len(str(curRow)) > 1:
-                    cur_heterozygot_method1.append(''.join(sorted(set(curRow.replace(",", "")))))
+                    cur_heterozygot_method1.append(''.join(sorted(set(curRow.replace("/", "")))))
                 else:
                     cur_heterozygot_method1.append(''.join(sorted(curRow + curColumn[1].iloc[idxRow + 1])))
-
-                    # if len(str(curRow)) != 3: cur_heterozygot_method1.append(''.join(sorted(curRow + curColumn[1].iloc[idxRow + 1])))
 
             # Process method2 homozygous and heterozygous haplotype frequencies
             elif 'H1' in str(row_names[idxRow]) and method2 in str(row_names[idxRow]) and len(str(curRow)) <= 3:
@@ -237,7 +235,7 @@ def extract_haplotype_frequencies(df_to_analyze, methods):
                     cur_homozygot_method2.append(''.join(sorted(curRow + curColumn[1].iloc[idxRow + 1])))
                 # Heterozygous case
                 elif curRow == curColumn[1].iloc[idxRow + 1] and len(str(curRow)) > 1:
-                    cur_heterozygot_method2.append(''.join(sorted(set(curRow.replace(",", "")))))
+                    cur_heterozygot_method2.append(''.join(sorted(set(curRow.replace("/", "")))))
                 else:
                     cur_heterozygot_method2.append(''.join(sorted(curRow + curColumn[1].iloc[idxRow + 1])))
 
@@ -273,8 +271,8 @@ def extract_haplotype_frequencies(df_to_analyze, methods):
         curCategory_method1 += add_if_not_empty(check_is_empty(list_output_cur_heterozygot_method1, 0))
         curCategory_method1 += add_if_not_empty(check_is_empty(list_output_cur_homozygot_method1, 1))
 
-        # Remove the leading comma
-        if curCategory_method1 and curCategory_method1[0] == ',':
+        # Remove the leading backslash
+        if curCategory_method1 and curCategory_method1[0] == '/':
             curCategory_method1 = curCategory_method1[1:]
 
         frequency_method1 = calculate_frequency(list_output_cur_homozygot_method1,
@@ -318,8 +316,8 @@ def extract_haplotype_frequencies(df_to_analyze, methods):
         #
         frequency_method2 = calculate_frequency(list_output_cur_homozygot_method2, list_output_cur_heterozygot_method2)
 
-        # # Remove the leading comma
-        if curCategory_method2 and curCategory_method2[0] == ',':
+        # # Remove the leading backslach
+        if curCategory_method2 and curCategory_method2[0] == '/':
             curCategory_method2 = curCategory_method2[1:]
         #
         items_method2 = iter(frequency_method2.items())
@@ -452,7 +450,7 @@ def row_summary(df_to_analyze, cur_amplicon):
                 for pos, val1 in zip(order, row):
                     val2 = h2_row[df_to_analyze.columns[order.index(pos)]]
                     if not pd.isna(val1):
-                        if ',' in str(val1):
+                        if '/' in str(val1):
                             haplotype_values.append(f"{pos}{val1}")
                         else:
                             haplotype_values.append(f"{pos}{val1}|{val2}")
@@ -487,14 +485,14 @@ def row_summary(df_to_analyze, cur_amplicon):
 
 
 def sort_entry(entry):
-    # Check if there is a comma in the entry
-    if ',' in entry:
-        # Split the entry at the comma
-        left_side, right_side = entry.split(',')
-        # Sort both sides and join them back with a comma
-        sorted_entry = ','.join([''.join(sorted(left_side)), ''.join(sorted(right_side))])
+    # Check if there is a backslash in the entry
+    if '/' in entry:
+        # Split the entry at the backslash
+        left_side, right_side = entry.split('/')
+        # Sort both sides and join them back with a backslash
+        sorted_entry = '/'.join([''.join(sorted(left_side)), ''.join(sorted(right_side))])
         return sorted_entry
-    # If there is no comma, return the entry as is
+    # If there is no backslash, return the entry as is
     return entry
 
 
@@ -511,10 +509,10 @@ def analyze_occurrence(df_to_analyze, methods=None):
         # Filter out empty strings and reset the index without adding the old index as a column
         return column[column != ''].reset_index(drop=True)
 
-    # Sorting function for comma-separated values in df_H1
-    def sort_comma_separated(entry):
-        if ',' in entry:
-            return ','.join(sorted(entry.split(',')))
+    # Sorting function for backslash-separated values in df_H1
+    def sort_backslash_separated(entry):
+        if '/' in entry:
+            return '/'.join(sorted(entry.split('/')))
         return entry
 
     def process_dataframe(df):
@@ -532,18 +530,18 @@ def analyze_occurrence(df_to_analyze, methods=None):
 
         assert (df_H1.index == df_H2.index).all()
 
-        df_H1 = df_H1.applymap(sort_comma_separated)
+        df_H1 = df_H1.applymap(sort_backslash_separated)
 
-        df_joined = df_H1.where(df_H1.applymap(lambda x: ',' in x), df_H1 + df_H2)
+        df_joined = df_H1.where(df_H1.applymap(lambda x: '/' in x), df_H1 + df_H2)
 
         exclude_columns = [col for col in df_joined.columns if "numeration" in str(col)]
         include_columns = [col for col in df_joined.columns if col not in exclude_columns]
 
         # remove if greater than 6 chars long
         for col in include_columns:
-            # Remove commas from cells that have less than 6 characters
+            # Remove backslash from cells that have less than 6 characters
             df_joined[col] = df_joined[col].apply(
-                lambda x: x.replace(',', '') if isinstance(x, str) and len(x) < 6 else x)
+                lambda x: x.replace('/', '') if isinstance(x, str) and len(x) < 6 else x)
 
             # Set to empty string if cell length is more than 6 characters
             df_joined.loc[df_joined[col].astype(str).str.len() > 6, col] = ''
@@ -611,7 +609,7 @@ def analyze_occurrence(df_to_analyze, methods=None):
 
     return df_return
 
-def extract_combinations(df_to_analyse, methods, cur_amplicon):
+def extract_combinations_alleles(df_to_analyse, methods, cur_amplicon):
     # Function to sort values with '/' by alphabet
     def sort_value(value):
         if pd.notna(value) and len(value) == 3 and '/' in value:
@@ -627,8 +625,8 @@ def extract_combinations(df_to_analyse, methods, cur_amplicon):
         if value2 < value1:
             value1, value2 = value2, value1
         if value1 == value2 and value1 != '':
-            if ',' in value1:
-                return value1.replace(',', '/')
+            if '/' in value1:
+                return value1.replace('/', '/')
             else:
                 return value1 + '|' + value2
         else:
@@ -639,7 +637,7 @@ def extract_combinations(df_to_analyse, methods, cur_amplicon):
     df_to_analyse = df_to_analyse.T
 
     # Create a new DataFrame for the results
-    results = pd.DataFrame(columns=["haplotype by ref.seq. numeration", "haplotype by CDS numeration", "haplotype by NCBI numeration",
+    results = pd.DataFrame(columns=["alleles by ref.seq. numeration", "alleles by CDS numeration", "alleles by NCBI numeration",
                                     f"Counter {methods[0]}", f"Counter {methods[1]}"])
 
     # Get the list of positions
@@ -676,19 +674,102 @@ def extract_combinations(df_to_analyse, methods, cur_amplicon):
 
                 if haplotype_ref_numeration != '':
                     # Check if the combination is new or seen before
-                    if haplotype_ref_numeration not in results["haplotype by ref.seq. numeration"].values:
-                        new_row = pd.DataFrame({"haplotype by ref.seq. numeration": [haplotype_ref_numeration],
-                                                "haplotype by CDS numeration": [haplotype_cds_numeration],
-                                                "haplotype by NCBI numeration": [haplotype_ncbi_numeration],
+                    if haplotype_ref_numeration not in results["alleles by ref.seq. numeration"].values:
+                        new_row = pd.DataFrame({"alleles by ref.seq. numeration": [haplotype_ref_numeration],
+                                                "alleles by CDS numeration": [haplotype_cds_numeration],
+                                                "alleles by NCBI numeration": [haplotype_ncbi_numeration],
                                                 f"Counter {methods[0]}": [0],
                                                 f"Counter {methods[1]}": [0]})
                         results = pd.concat([results, new_row], ignore_index=True)
 
                     # Update the counters
-                    results.loc[(results["haplotype by ref.seq. numeration"] == haplotype_ref_numeration) &
-                                (results["haplotype by CDS numeration"] == haplotype_cds_numeration) &
-                                (results["haplotype by NCBI numeration"] == haplotype_ncbi_numeration),
+                    results.loc[(results["alleles by ref.seq. numeration"] == haplotype_ref_numeration) &
+                                (results["alleles by CDS numeration"] == haplotype_cds_numeration) &
+                                (results["alleles by NCBI numeration"] == haplotype_ncbi_numeration),
                                 f"Counter {method}"] += 1
+
+    # Sort results by the first method's counter
+    results = results.sort_values(by=f"Counter {methods[0]}", ascending=False).reset_index(drop=True)
+    return results
+
+def extract_combinations_haplotypes(df_to_analyse, methods, cur_amplicon):
+    # Function to sort values with '/' by alphabet
+    def sort_value(value):
+        if pd.notna(value) and len(value) == 3 and '/' in value:
+            chars = value.split('/')
+            return '/'.join(sorted(chars))
+        return value
+
+    # Transpose the DataFrame for easier processing
+    df_to_analyse = df_to_analyse.T
+
+    # Create a new DataFrame for the results
+    results = pd.DataFrame(columns=["haplotypes by ref.seq. numeration", "haplotypes by CDS numeration", "haplotypes by NCBI numeration",
+                                    f"Counter {methods[0]}", f"Counter {methods[1]}"])
+
+    # Get the list of positions
+    positions = df_to_analyse.index.tolist()
+
+    # Reverse the positions if the sequencing direction is 'backward'
+    if cur_amplicon['Sequencing Direction'] == 'backward':
+        positions = positions[::-1]
+
+    # Iterate through the columns of the transposed DataFrame
+    for col in df_to_analyse.columns:
+        combinations_seen = set()  # Set to track unique combinations
+
+        # Iterate through each method
+        for method in methods:
+            if f"_H1_{method}" in col:
+                base_col_name = col.replace(f"_H1_{method}", "")
+                h2_col = f"{base_col_name}_H2_{method}"
+
+                # Combine H1 and H2 values
+                cur_combination_h1 = df_to_analyse.apply(lambda row: row[col], axis=1)
+                cur_combination_h2 = df_to_analyse.apply(lambda row: row[h2_col], axis=1)
+
+                # Determine the numerations
+                items_h1 = list(cur_combination_h1.dropna().items())
+                items_h2 = list(cur_combination_h2.dropna().items())
+
+                if cur_amplicon['Sequencing Direction'] == 'backward':
+                    haplotype_ref_numeration_h1 = " ".join([f"{int(index)}{value}" for index, value in reversed(items_h1)])
+                    haplotype_ref_numeration_h2 = " ".join([f"{int(index)}{value}" for index, value in reversed(items_h2)])
+                    haplotype_cds_numeration_h1 = " ".join([f"{df_to_analyse['variant position by CDS numeration'].loc[index]}{value}" for index, value in reversed(items_h1) if index in df_to_analyse.index])
+                    haplotype_cds_numeration_h2 = " ".join([f"{df_to_analyse['variant position by CDS numeration'].loc[index]}{value}" for index, value in reversed(items_h2) if index in df_to_analyse.index])
+                    haplotype_ncbi_numeration_h1 = " ".join([f"{df_to_analyse['variant position by NCBI numeration'].loc[index]}{value}" for index, value in reversed(items_h1) if index in df_to_analyse.index])
+                    haplotype_ncbi_numeration_h2 = " ".join([f"{df_to_analyse['variant position by NCBI numeration'].loc[index]}{value}" for index, value in reversed(items_h2) if index in df_to_analyse.index])
+                else:
+                    haplotype_ref_numeration_h1 = " ".join([f"{int(index)}{value}" for index, value in items_h1])
+                    haplotype_ref_numeration_h2 = " ".join([f"{int(index)}{value}" for index, value in items_h2])
+                    haplotype_cds_numeration_h1 = " ".join([f"{df_to_analyse['variant position by CDS numeration'].loc[index]}{value}" for index, value in items_h1 if index in df_to_analyse.index])
+                    haplotype_cds_numeration_h2 = " ".join([f"{df_to_analyse['variant position by CDS numeration'].loc[index]}{value}" for index, value in items_h2 if index in df_to_analyse.index])
+                    haplotype_ncbi_numeration_h1 = " ".join([f"{df_to_analyse['variant position by NCBI numeration'].loc[index]}{value}" for index, value in items_h1 if index in df_to_analyse.index])
+                    haplotype_ncbi_numeration_h2 = " ".join([f"{df_to_analyse['variant position by NCBI numeration'].loc[index]}{value}" for index, value in items_h2 if index in df_to_analyse.index])
+
+                # Combine results for H1 and H2
+                haplotype_ref_numeration = haplotype_ref_numeration_h1 + " " + haplotype_ref_numeration_h2
+                haplotype_cds_numeration = haplotype_cds_numeration_h1 + " " + haplotype_cds_numeration_h2
+                haplotype_ncbi_numeration = haplotype_ncbi_numeration_h1 + " " + haplotype_ncbi_numeration_h2
+
+                if haplotype_ref_numeration != '':
+                    # Check if the combination is new or seen before
+                    if haplotype_ref_numeration not in results["haplotypes by ref.seq. numeration"].values:
+                        new_row = pd.DataFrame({"haplotypes by ref.seq. numeration": [haplotype_ref_numeration],
+                                                "haplotypes by CDS numeration": [haplotype_cds_numeration],
+                                                "haplotypes by NCBI numeration": [haplotype_ncbi_numeration],
+                                                f"Counter {methods[0]}": [0],
+                                                f"Counter {methods[1]}": [0]})
+                        results = pd.concat([results, new_row], ignore_index=True)
+
+                    # Update the counters
+                    counter_increment = 2 if cur_combination_h1.equals(cur_combination_h2) else 1
+                    results.loc[(results["haplotypes by ref.seq. numeration"] == haplotype_ref_numeration) &
+                                (results["haplotypes by CDS numeration"] == haplotype_cds_numeration) &
+                                (results["haplotypes by NCBI numeration"] == haplotype_ncbi_numeration),
+                                f"Counter {method}"] += counter_increment
+
+    results = results[results["haplotypes by ref.seq. numeration"].str.strip() != '']
 
     # Sort results by the first method's counter
     results = results.sort_values(by=f"Counter {methods[0]}", ascending=False).reset_index(drop=True)
@@ -875,15 +956,17 @@ def annotate_chi_square(cur_result: pd.DataFrame) -> pd.DataFrame:
 
 def sort_excel_sheets(sheet_names):
     # Separate main sheets and haplotypes by methods sheets
-    main_sheets = [name for name in sheet_names if not name.endswith('_haplotypes_by_methods')]
+    main_sheets = [name for name in sheet_names if not name.endswith('_by_methods')]
     haplotype_sheets = [name for name in sheet_names if name.endswith('_haplotypes_by_methods')]
+    allele_sheets = [name for name in sheet_names if name.endswith('_alleles_by_methods')]
 
     # Sort both lists individually
     main_sheets.sort()
     haplotype_sheets.sort()
+    allele_sheets.sort()
 
     # Combine the sorted lists
-    sorted_sheets = main_sheets + haplotype_sheets
+    sorted_sheets = main_sheets + haplotype_sheets + allele_sheets
 
     return sorted_sheets
 
@@ -930,8 +1013,9 @@ def analysis_tool(amplicon_data, methods, file_name_merged, path_output_excel, p
         upper_limit = amplicon_data[amplicon_names[i]]['Upper Limit']
         cur_result = cut_off_sequence(cur_result, lower_limit, upper_limit)
 
-        # Extract haplotype combinations and process NCBI and CDS data
-        overall_result_haplotypes = extract_combinations(cur_result, methods, cur_amplicon_data)
+        # Extract allele and haplotype combinations
+        overall_result_alleles = extract_combinations_alleles(cur_result, methods, cur_amplicon_data)
+        overall_result_haplotypes = extract_combinations_haplotypes(cur_result, methods, cur_amplicon_data)
 
         # Analyze occurrence and frequencies
         cur_result = row_summary(cur_result, cur_amplicon_data)
@@ -942,6 +1026,7 @@ def analysis_tool(amplicon_data, methods, file_name_merged, path_output_excel, p
         # Add results to the output_sheets dictionary
         output_sheets[amplicon_names[i]] = cur_result
         output_sheets[f'{amplicon_names[i]}_haplotypes_by_methods'] = overall_result_haplotypes
+        output_sheets[f'{amplicon_names[i]}_alleles_by_methods'] = overall_result_alleles
 
     # Sort the sheet names
     sorted_sheet_names = sort_excel_sheets(list(output_sheets.keys()))
@@ -949,10 +1034,9 @@ def analysis_tool(amplicon_data, methods, file_name_merged, path_output_excel, p
     with pd.ExcelWriter(file_name_analysed, engine='xlsxwriter') as writer:
         # Write each sheet to the Excel file in the sorted order
         for sheet_name in sorted_sheet_names:
-            if sheet_name.endswith('_haplotypes_by_methods'):
+            if sheet_name.endswith('_by_methods'):
                 output_sheets[sheet_name].to_excel(writer, sheet_name=sheet_name, index=False)
             else:
                 output_sheets[sheet_name].to_excel(writer, sheet_name=sheet_name)
-
 
     return file_name_analysed

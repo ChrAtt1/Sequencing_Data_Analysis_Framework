@@ -35,8 +35,8 @@ def phasing_amplicon(cur_df):
         ref = row['REF']
         alt = row['ALT']
         if cur_phasing_status == '0/1':
-            cur_df.iat[idx, -3] = f"{ref},{alt}"
-            cur_df.iat[idx, -2] = f"{ref},{alt}"
+            cur_df.iat[idx, -3] = f"{ref}/{alt}"
+            cur_df.iat[idx, -2] = f"{ref}/{alt}"
         elif cur_phasing_status == '1|0':
             cur_df.iat[idx, -3] = alt
             cur_df.iat[idx, -2] = ref

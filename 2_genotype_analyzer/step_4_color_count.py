@@ -328,4 +328,5 @@ def fill_row_and_color_count_setting(amplicon_data, methods, file_excel_analyzed
         fill_excels(methods, file_name_colored, sheet_name)
         color_count(methods, sheet_name, file_name_colored)
         format_excel_sheet(file_name_colored, sheet_name, methods[1])
-        format_excel_sheet_haplotypes(file_name_colored, sheet_name+'_haplotypes_by_methods')
+        format_excel_sheet_haplotypes(file_name_colored, sheet_name + '_haplotypes_by_methods')
+        format_excel_sheet_haplotypes(file_name_colored, sheet_name + '_alleles_by_methods')
