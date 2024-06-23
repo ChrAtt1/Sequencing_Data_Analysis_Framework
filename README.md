@@ -160,7 +160,7 @@ Run the `GenotypeAnalyzer.exe` file.
 
 2. **Configure Settings:**
 
-    - Use the GUI to browse and select the necessary files and folders.
+    - Use the GUI to browse and select the necessary files and folders for the datasets and reference sequence as well es the additional settings.
     - Configure the sequencing methods and amplicon settings as needed.
     - Choose between analyzing VCF files (Option A) or using previous Genotype Analyzer output Excel files (Option B).
 
