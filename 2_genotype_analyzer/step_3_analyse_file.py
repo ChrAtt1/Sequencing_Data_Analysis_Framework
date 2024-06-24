@@ -857,7 +857,10 @@ def process_sequence(file_path, amplicon_data):
 def insert_ncbi(df_to_analyze, cur_amplicon_data):
     offset = cur_amplicon_data['Offset NCBI']
     reverse = cur_amplicon_data['Sequencing Direction'] == 'backward'
-    ncbi_row = [offset - name if not isinstance(name, str) else name for name in df_to_analyze.columns]
+    if offset != 0:
+        ncbi_row = [offset - name + 1 if not isinstance(name, str) else name for name in df_to_analyze.columns]
+    else:
+        ncbi_row = df_to_analyze.columns
 
     # If sequencing direction is 'backward', reverse the new row except for the 'NCBI' column
     if reverse:
