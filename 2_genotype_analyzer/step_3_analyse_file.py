@@ -747,27 +747,35 @@ def extract_combinations_haplotypes(df_to_analyse, methods, cur_amplicon):
                     haplotype_ncbi_numeration_h1 = " ".join([f"{df_to_analyse['variant position by NCBI numeration'].loc[index]}{value}" for index, value in items_h1 if index in df_to_analyse.index])
                     haplotype_ncbi_numeration_h2 = " ".join([f"{df_to_analyse['variant position by NCBI numeration'].loc[index]}{value}" for index, value in items_h2 if index in df_to_analyse.index])
 
-                # Combine results for H1 and H2
-                haplotype_ref_numeration = haplotype_ref_numeration_h1 + " " + haplotype_ref_numeration_h2
-                haplotype_cds_numeration = haplotype_cds_numeration_h1 + " " + haplotype_cds_numeration_h2
-                haplotype_ncbi_numeration = haplotype_ncbi_numeration_h1 + " " + haplotype_ncbi_numeration_h2
-
-                if haplotype_ref_numeration != '':
+                if haplotype_ref_numeration_h1 != '':
                     # Check if the combination is new or seen before
-                    if haplotype_ref_numeration not in results["haplotypes by ref.seq. numeration"].values:
-                        new_row = pd.DataFrame({"haplotypes by ref.seq. numeration": [haplotype_ref_numeration],
-                                                "haplotypes by CDS numeration": [haplotype_cds_numeration],
-                                                "haplotypes by NCBI numeration": [haplotype_ncbi_numeration],
+                    if haplotype_ref_numeration_h1 not in results["haplotypes by ref.seq. numeration"].values:
+                        new_row = pd.DataFrame({"haplotypes by ref.seq. numeration": [haplotype_ref_numeration_h1],
+                                                "haplotypes by CDS numeration": [haplotype_cds_numeration_h1],
+                                                "haplotypes by NCBI numeration": [haplotype_ncbi_numeration_h1],
                                                 f"Counter {methods[0]}": [0],
                                                 f"Counter {methods[1]}": [0]})
                         results = pd.concat([results, new_row], ignore_index=True)
 
-                    # Update the counters
-                    counter_increment = 2 if cur_combination_h1.equals(cur_combination_h2) else 1
-                    results.loc[(results["haplotypes by ref.seq. numeration"] == haplotype_ref_numeration) &
-                                (results["haplotypes by CDS numeration"] == haplotype_cds_numeration) &
-                                (results["haplotypes by NCBI numeration"] == haplotype_ncbi_numeration),
-                                f"Counter {method}"] += counter_increment
+                    results.loc[(results["haplotypes by ref.seq. numeration"] == haplotype_ref_numeration_h1) &
+                                (results["haplotypes by CDS numeration"] == haplotype_cds_numeration_h1) &
+                                (results["haplotypes by NCBI numeration"] == haplotype_ncbi_numeration_h1),
+                                f"Counter {method}"] += 1
+
+                if haplotype_ref_numeration_h2 != '':
+                    # Check if the combination is new or seen before
+                    if haplotype_ref_numeration_h2 not in results["haplotypes by ref.seq. numeration"].values:
+                        new_row = pd.DataFrame({"haplotypes by ref.seq. numeration": [haplotype_ref_numeration_h2],
+                                                "haplotypes by CDS numeration": [haplotype_cds_numeration_h2],
+                                                "haplotypes by NCBI numeration": [haplotype_ncbi_numeration_h2],
+                                                f"Counter {methods[0]}": [0],
+                                                f"Counter {methods[1]}": [0]})
+                        results = pd.concat([results, new_row], ignore_index=True)
+
+                    results.loc[(results["haplotypes by ref.seq. numeration"] == haplotype_ref_numeration_h2) &
+                                (results["haplotypes by CDS numeration"] == haplotype_cds_numeration_h2) &
+                                (results["haplotypes by NCBI numeration"] == haplotype_ncbi_numeration_h2),
+                                f"Counter {method}"] += 1
 
     results = results[results["haplotypes by ref.seq. numeration"].str.strip() != '']
 
