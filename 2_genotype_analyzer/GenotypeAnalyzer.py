@@ -147,7 +147,9 @@ def build_genotypes():
     file_name_analysed, exec_time4 = measure_execution_time(step_3_analyse_file.analysis_tool, amplicon_data, methods,
                                                             file_name_merged, path_output, ref_path_var.get(),
                                                             qual_filter_var_method1.get(), dp_filter_var_method1.get(),
-                                                            qual_filter_var_method2.get(), dp_filter_var_method2.get())
+                                                            qual_filter_var_method2.get(), dp_filter_var_method2.get(),
+                                                            qual_merge_var_method1.get(), dp_merge_var_method1.get(),
+                                                            qual_merge_var_method2.get(), dp_merge_var_method2.get())
 
     total_execution_time += exec_time4
     time.sleep(5)  # pause for 5 seconds

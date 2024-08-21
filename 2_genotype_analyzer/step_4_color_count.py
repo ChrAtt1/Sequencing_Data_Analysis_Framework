@@ -115,13 +115,13 @@ def fill_excels(methods, path_excel_filled, sheet_name):
             cur_wb.cell(row=maxlength_row + 2, column=cell.column).fill = fill_colors['red']
 
             # fill countered orange
-            cur_wb.cell(row=maxlength_row + 3, column=minlength_column).value = 'Only the first method detected a haplotype per variant position (orange)'
+            cur_wb.cell(row=maxlength_row + 3, column=minlength_column).value = 'Number of variants only detected by the first method (orange)'
             cur_wb.cell(row=maxlength_row + 3, column=minlength_column).font = bold_font
             cur_wb.cell(row=maxlength_row + 3, column=cell.column).value = cur_counter_orange
             cur_wb.cell(row=maxlength_row + 3, column=cell.column).fill = fill_colors['orange']
 
             # fill countered yellow
-            cur_wb.cell(row=maxlength_row + 4, column=minlength_column).value = 'Only the second method detected a haplotype per variant position (yellow)'
+            cur_wb.cell(row=maxlength_row + 4, column=minlength_column).value = 'Number of variants only detected by the second method (yellow)'
             cur_wb.cell(row=maxlength_row + 4, column=minlength_column).font = bold_font
             cur_wb.cell(row=maxlength_row + 4, column=cell.column).value = cur_counter_yellow
             cur_wb.cell(row=maxlength_row + 4, column=cell.column).fill = fill_colors['yellow']

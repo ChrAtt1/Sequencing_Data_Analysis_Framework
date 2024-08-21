@@ -113,8 +113,6 @@ def setting_phasing_tool(path_vcf, path_save_result, method, amplicon_data):
 
     # Iterate over each vcf-file
     for cur_vcf in vcf_files:
-        if(counter_vcf==36):
-            x=0
         print(str(counter_vcf) + ' of ' + str(len(vcf_files)))
         counter_vcf = counter_vcf + 1
         cur_vcf = cur_vcf.replace('\\', '/')
@@ -179,6 +177,20 @@ def setting_phasing_tool(path_vcf, path_save_result, method, amplicon_data):
                     # Sort columns numerically
                     for df in [cur_result[cur_amplicon], cur_results_phased[cur_amplicon], cur_results_unphased[cur_amplicon]]:
                         df.sort_index(axis=1, inplace=True)
+        else:
+            # Get current Barcode
+            cur_dataset = 'bc_' + os.path.basename(cur_vcf).split('_')[0]
+
+            # Create an empty DataFrame with the expected columns for each amplicon
+            for cur_amplicon in amplicon_data.keys():
+                # Define the columns with empty values
+                new_rows = pd.DataFrame(
+                    np.nan,
+                    index=[f"{cur_dataset}_QUAL / DP", f"{cur_dataset}_H1", f"{cur_dataset}_H2"],
+                    columns=cur_result[cur_amplicon].columns
+                )
+
+                cur_result[cur_amplicon] = pd.concat([cur_result[cur_amplicon], new_rows])
 
     # Save Error Log
     error_log = error_log.drop_duplicates(subset='Error').reset_index(drop=True)
