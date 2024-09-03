@@ -162,16 +162,16 @@ def color_count(methods, sheet_name, excel_path):
     bold_font = Font(bold=True)
 
     # Setting values and making them bold
-    ws.cell(row=1, column=max_column + 1).value = 'Number of matching results per sample (green)'
+    ws.cell(row=1, column=max_column + 1).value = 'number of matching results per sample (green)'
     ws.cell(row=1, column=max_column + 1).font = bold_font
 
-    ws.cell(row=1, column=max_column + 2).value = 'Number of mismatching results per sample (red)'
+    ws.cell(row=1, column=max_column + 2).value = 'number of mismatching results per sample (red)'
     ws.cell(row=1, column=max_column + 2).font = bold_font
 
-    ws.cell(row=1, column=max_column + 3).value = 'Only the first method detected a haplotype per sample (orange)'
+    ws.cell(row=1, column=max_column + 3).value = 'only the first method detected a haplotype per sample (orange)'
     ws.cell(row=1, column=max_column + 3).font = bold_font
 
-    ws.cell(row=1, column=max_column + 4).value = 'Only the second method detected a haplotype per sample (yellow)'
+    ws.cell(row=1, column=max_column + 4).value = 'only the second method detected a haplotype per sample (yellow)'
     ws.cell(row=1, column=max_column + 4).font = bold_font
 
     # Iterate through the rows in the sheet, starting from the third column and excluding the last 10 rows
